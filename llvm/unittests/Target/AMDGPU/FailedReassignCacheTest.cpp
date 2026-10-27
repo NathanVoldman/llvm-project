@@ -247,12 +247,14 @@ TEST_F(FailedReassignCacheTest, MultiEntryNoteUnassignUpdatesOverlap) {
     F.Cache.remember(B, /*HintOnly=*/false);
 
     F.Cache.noteUnassign(A, F.vgpr(2), /*ClearAllReferencingSegments=*/false);
-    ArrayRef<MCPhysReg> FreedA = F.Cache.freedRegs(A.reg().id());
+    // A's own failure is dropped so the next query recomputes it. Interior
+    // segment bounds are not part of the fingerprint.
+    EXPECT_FALSE(F.Cache.contains(A.reg().id()));
+    EXPECT_EQ(F.Cache.reuse(A, F.vgpr(2)), reassign::Reuse::Miss);
     ArrayRef<MCPhysReg> FreedB = F.Cache.freedRegs(B.reg().id());
-    ASSERT_EQ(FreedA.size(), 1u);
     ASSERT_EQ(FreedB.size(), 1u);
-    EXPECT_EQ(FreedA[0], static_cast<MCPhysReg>(AMDGPU::VGPR2));
-    // Both live in the same block, so the free updates every overlapping entry.
+    // Both live in the same block, so the free updates every other overlapping
+    // entry.
     EXPECT_EQ(FreedB[0], static_cast<MCPhysReg>(AMDGPU::VGPR2));
   });
 }

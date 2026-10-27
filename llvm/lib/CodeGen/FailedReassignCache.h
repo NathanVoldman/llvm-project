@@ -10,10 +10,12 @@
 // interferes with Intf. Assignments cannot create a new free register, so the
 // failure stays valid until an unassign frees one across Intf's live range.
 // Entries are indexed by slot-index buckets so an unassign updates only the
-// intervals that overlap the freed range. renumberIndexes() and packIndexes()
-// rewrite the numbers behind existing SlotIndex handles without changing
-// equality, which makes the bucket keys stale. The cache drops every entry when
-// that happens rather than trying to rebuild the index.
+// intervals that overlap the freed range. The unassigned interval's own entry
+// is dropped so the next query recomputes the result. Interior segment bounds
+// are not part of the fingerprint. renumberIndexes() and packIndexes() rewrite
+// the numbers behind existing SlotIndex handles without changing equality,
+// which makes the bucket keys stale. The cache drops every entry when that
+// happens rather than trying to rebuild the index.
 //
 //===----------------------------------------------------------------------===//
 
@@ -75,10 +77,12 @@ public:
   /// - RecheckTrue: a freed reg (or alias) in the order is free; entry erased.
   Reuse reuse(const LiveInterval &LI, MCRegister FromReg);
 
-  /// Notify that \p PhysReg was unassigned from \p Unassigned. Overlapping
-  /// entries append \p PhysReg to FreedRegs. \p ClearAllReferencingSegments,
-  /// an empty or invalid free, or a slot-index renumber since the entries
-  /// were recorded clears the whole cache.
+  /// Notify that \p PhysReg was unassigned from \p Unassigned. The unassigned
+  /// interval's own entry is erased so the next query recomputes it; interior
+  /// segment bounds are not stored. Other overlapping entries append
+  /// \p PhysReg to FreedRegs. \p ClearAllReferencingSegments, an empty or
+  /// invalid free, or a slot-index renumber since the entries were recorded
+  /// clears the whole cache.
   void noteUnassign(const LiveInterval &Unassigned, MCRegister PhysReg,
                     bool ClearAllReferencingSegments);
 

@@ -194,6 +194,10 @@ void Cache::noteUnassign(const LiveInterval &Unassigned, MCRegister PhysReg,
   // they no longer cover the freed segments, so drop every failure and let
   // the next query scan instead of keeping a stale false.
   dropIfRenumbered();
+  // SegCount and the outer bounds do not record interior edges. Drop this
+  // interval's failure before those edges change, and recompute next time.
+  if (Unassigned.reg().isVirtual())
+    erase(Unassigned.reg().id());
   if (empty())
     return;
   MCPhysReg Freed = PhysReg.id();
