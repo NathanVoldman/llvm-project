@@ -217,8 +217,7 @@ def olMemcpy : Function {
     let details = [
         "For host pointers, use the host device belonging to the OL_PLATFORM_BACKEND_HOST platform, or pass NULL.",
         "If both pointers are on the host and a queue is specified, the memcpy is ordered with other work in the queue.",
-        "If a queue is not specified, the memcpy happens synchronously",
-        "If a queue is not specified and the memcpy is from host to device memory, it may be performed as a direct write by the host"
+        "If a queue is not specified, the memcpy happens synchronously"
     ];
     let params = [
         Param<"ol_queue_handle_t", "Queue", "handle of the queue.", PARAM_IN_OPTIONAL>,
