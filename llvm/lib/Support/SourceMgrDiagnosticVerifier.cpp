@@ -251,5 +251,6 @@ bool SourceMgrDiagnosticVerifier::verify(raw_ostream &os, SourceMgr &mgr) {
   for (auto &diag : expectedUnknownLocDiags)
     checkExpectedDiags(diag);
   expectedDiagsPerFile.clear();
+  expectedUnknownLocDiags.clear();
   return ok;
 }
