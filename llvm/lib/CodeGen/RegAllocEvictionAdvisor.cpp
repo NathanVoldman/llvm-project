@@ -66,7 +66,7 @@ static cl::opt<unsigned> ReassignCacheMinOrder(
     "regalloc-reassign-cache-min-order", cl::Hidden,
     cl::desc("Cache a failed canReassign only when the scan examined more "
              "physical registers than this"),
-    cl::init(512));
+    cl::init(32));
 
 static cl::opt<unsigned> ReassignCacheMaxFreed(
     "regalloc-reassign-cache-max-freed", cl::Hidden,
